@@ -2,9 +2,16 @@
 #include <HTTPClient.h>
 #include <Update.h>
 
-const char* ssid = "C15";           // Replace with your WiFi SSID
-const char* password = "12345678";   // Replace with your WiFi Password
+// Wi-Fi credentials
+const char* ssid = "C15";
+const char* password = "12345678";
+
+// URLs for firmware binary and version file
 const char* firmware_url = "https://raw.githubusercontent.com/Shubhaam-idle/test/main/fw.bin";
+const char* version_url = "https://raw.githubusercontent.com/Shubhaam-idle/test/refs/heads/main/bin_version.txt";
+
+// Current firmware version
+const String current_version = "2.0";
 
 void setup() {
   Serial.begin(115200);
@@ -15,50 +22,80 @@ void setup() {
     Serial.println("Connecting to WiFi...");
   }
   Serial.println("Connected to WiFi!");
-  ot();
+
+  checkForUpdate();
 }
 
-void loop()
- {
- Serial.println("4");
+void loop() {
+  // Placeholder for main loop tasks
+  Serial.println("Running...");
+  delay(10000);
 }
 
-
-void ot()
-{
-   if (WiFi.status() == WL_CONNECTED) 
-  {
+void checkForUpdate() {
+  if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-    http.begin(firmware_url); // Specify the URL of the firmware
 
+    // Check firmware version
+    http.begin(version_url);
     int httpCode = http.GET();
+
     if (httpCode == HTTP_CODE_OK) {
-      int contentLength = http.getSize();
-      bool canBegin = Update.begin(contentLength);
+      String new_version = http.getString();
+      new_version.trim(); // Remove any trailing whitespace
 
-      if (canBegin) {
-        Serial.println("Begin OTA update...");
-        size_t written = Update.writeStream(http.getStream());
+      Serial.print("Current Version: ");
+      Serial.println(current_version);
+      Serial.print("Available Version: ");
+      Serial.println(new_version);
 
-        if (written == contentLength) {
-          Serial.println("OTA update complete!");
-        } else {
-          Serial.println("OTA update failed!");
-        }
-
-        if (Update.end()) {
-          Serial.println("Update successfully completed. Restarting...");
-          ESP.restart();
-        } else {
-          Serial.printf("Update failed. Error #%d\n", Update.getError());
-        }
+      if (new_version != current_version) {
+        Serial.println("New firmware version detected. Starting OTA update...");
+        performOTAUpdate();
       } else {
-        Serial.println("Not enough space for OTA update!");
+        Serial.println("Firmware is up to date.");
       }
     } else {
-      Serial.printf("HTTP GET failed with code %d\n", httpCode);
+      Serial.printf("Failed to check version. HTTP Code: %d\n", httpCode);
     }
 
     http.end();
+  } else {
+    Serial.println("Not connected to WiFi.");
   }
+}
+
+void performOTAUpdate() {
+  HTTPClient http;
+  http.begin(firmware_url);
+  int httpCode = http.GET();
+
+  if (httpCode == HTTP_CODE_OK) {
+    int contentLength = http.getSize();
+    bool canBegin = Update.begin(contentLength);
+
+    if (canBegin) {
+      Serial.println("Starting OTA update...");
+      size_t written = Update.writeStream(http.getStream());
+
+      if (written == contentLength) {
+        Serial.println("OTA update complete!");
+      } else {
+        Serial.println("OTA update failed!");
+      }
+
+      if (Update.end()) {
+        Serial.println("Update successfully completed. Restarting...");
+        ESP.restart();
+      } else {
+        Serial.printf("Update failed. Error: %d\n", Update.getError());
+      }
+    } else {
+      Serial.println("Not enough space for OTA update!");
+    }
+  } else {
+    Serial.printf("HTTP GET failed for firmware with code: %d\n", httpCode);
+  }
+
+  http.end();
 }
