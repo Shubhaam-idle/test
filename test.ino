@@ -20,7 +20,7 @@ void setup() {
 
 void loop()
  {
- Serial.println("2");
+ Serial.println("4");
 }
 
 
