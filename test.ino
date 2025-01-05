@@ -11,7 +11,7 @@ const char* firmware_url = "https://raw.githubusercontent.com/Shubhaam-idle/test
 const char* version_url = "https://raw.githubusercontent.com/Shubhaam-idle/test/refs/heads/main/bin_version.txt";
 
 // Current firmware version
-const String current_version = "2.0";
+const String current_version = "2.2";
 
 void setup() {
   Serial.begin(115200);
