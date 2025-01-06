@@ -3,15 +3,15 @@
 #include <Update.h>
 
 // Wi-Fi credentials
-const char* ssid = "C15";
-const char* password = "12345678";
+const char* ssid = "Skinnovation";
+const char* password = "Skinnovation@123";
 
 // URLs for firmware binary and version file
 const char* firmware_url = "https://raw.githubusercontent.com/Shubhaam-idle/test/main/fw.bin";
 const char* version_url = "https://raw.githubusercontent.com/Shubhaam-idle/test/refs/heads/main/bin_version.txt";
 
 // Current firmware version
-const String current_version = "2.3";
+const String current_version = "2.4";
 
 void setup() {
   Serial.begin(115200);
