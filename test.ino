@@ -8,10 +8,10 @@ const char* password = "";
 
 // URLs for firmware binary and version file
 const char* firmware_url = "https://raw.githubusercontent.com/Shubhaam-idle/test/main/wb.bin";
-const char* version_url = "https://raw.githubusercontent.com/Shubhaam-idle/test/refs/heads/wv.txt";
+const char* version_url = "https://raw.githubusercontent.com/Shubhaam-idle/test/refs/heads/main/wv.txt";
 
 // Current firmware version
-const String current_version = "1.0";
+const String current_version = "2.0";
 
 void setup() {
   Serial.begin(115200);
